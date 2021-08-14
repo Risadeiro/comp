@@ -11,6 +11,7 @@ package src.parser;
 	import src.ast.CommandEscrita;
 	import src.ast.CommandAtribuicao;
 	import src.ast.CommandDecisao;
+	import src.ast.CommandTamanho;
 	import src.ast.CommandEnquanto;
 	import src.ast.CommandFaca;
 	import java.util.ArrayList;
@@ -83,6 +84,16 @@ public interface compiladorListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCmd(compiladorParser.CmdContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link compiladorParser#cmdtamanho}.
+	 * @param ctx the parse tree
+	 */
+	void enterCmdtamanho(compiladorParser.CmdtamanhoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link compiladorParser#cmdtamanho}.
+	 * @param ctx the parse tree
+	 */
+	void exitCmdtamanho(compiladorParser.CmdtamanhoContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link compiladorParser#cmdleitura}.
 	 * @param ctx the parse tree

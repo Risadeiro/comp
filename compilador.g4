@@ -11,6 +11,7 @@ grammar compilador;
 	import src.ast.CommandEscrita;
 	import src.ast.CommandAtribuicao;
 	import src.ast.CommandDecisao;
+	import src.ast.CommandTamanho;
 	import src.ast.CommandEnquanto;
 	import src.ast.CommandFaca;
 	import java.util.ArrayList;
@@ -28,6 +29,7 @@ grammar compilador;
 	private Stack<ArrayList<AbstractCommand>> stack = new Stack<ArrayList<AbstractCommand>>();
 	private String _readID;
 	private String _writeID;
+    private int _exprTam;
 	private String _exprID;
 	private String _exprContent;
 	private String _exprDecision;
@@ -95,6 +97,8 @@ tipo       : 'numero' { _tipo = compiladorVariable.NUMBER;  }
            | 'booleano' { _tipo = compiladorVariable.BOOLEAN;  }
            | 'caracter' { _tipo = compiladorVariable.CHAR;  }
            | 'inteiro' { _tipo = compiladorVariable.INT;  }
+           | 'numero[]' { _tipo = compiladorVariable.VECTOR;  }
+
            ;
         
 bloco	: { curThread = new ArrayList<AbstractCommand>(); 
@@ -109,9 +113,23 @@ cmd		:  cmdleitura
  		|  cmdattrib
  		|  cmdselecao
 		|  cmdfaca 
-		|  cmdenquanto 
+		|  cmdenquanto
+		| cmdtamanho
 		;
-		
+
+cmdtamanho : 'tamanho' AP
+                        ID { verificaID(_input.LT(-1).getText());
+                              _readID = _input.LT(-1).getText();
+                            }
+                         FP
+                  {
+                    compiladorVariable var = (compiladorVariable)symbolTable.get(_readID);
+                    CommandTamanho cmd = new CommandTamanho(_readID, var);
+                    stack.peek().add(cmd);
+                  }
+            ;
+
+
 cmdleitura	: 'leia' AP
                      ID { verificaID(_input.LT(-1).getText());
                      	  _readID = _input.LT(-1).getText();
@@ -125,7 +143,8 @@ cmdleitura	: 'leia' AP
               	stack.peek().add(cmd);
               }   
 			;
-			
+
+
 cmdescrita	: 'escreva' 
                  AP 
                  ID { verificaID(_input.LT(-1).getText());
@@ -137,6 +156,21 @@ cmdescrita	: 'escreva'
                	  CommandEscrita cmd = new CommandEscrita(_writeID);
                	  stack.peek().add(cmd);
                }
+               |('escreva'
+                                                 AP{ curThread = new ArrayList<AbstractCommand>();
+                                                                         stack.push(curThread);
+                                                                       }
+                                                 cmdtamanho
+
+                                                 {
+                                                                        listaTrue = stack.pop();
+                                                                     }
+                                                 FP
+                                                 SC{
+                                                                      		CommandEscrita cmd = new CommandEscrita(listaTrue);
+                                                                      		stack.peek().add(cmd);
+                                                                      	}
+                                               )
 			;
 			
 cmdattrib	:  ID { verificaID(_input.LT(-1).getText());
@@ -146,7 +180,7 @@ cmdattrib	:  ID { verificaID(_input.LT(-1).getText());
                expr 
                SC
                {
-               	 	CommandAtribuicao cmd = new CommandAtribuicao(_exprID, _exprContent);
+               	 	CommandAtribuicao cmd = new CommandAtribuicao(_exprID, _exprContent, _exprTam);
                	 	stack.peek().add(cmd);
                }
 			;
@@ -225,25 +259,35 @@ cmdenquanto :  'enquanto' AP
             ;
 			
 expr		:  termo ( 
-	             OP  { _exprContent += _input.LT(-1).getText();}
+	             OP  { _exprContent += _input.LT(-1).getText();
+                        _exprTam = -1;
+	             }
 	            termo
 	            )*
 			;
 			
 termo		: ID { verificaID(_input.LT(-1).getText());
 	               _exprContent += _input.LT(-1).getText();
+                    _exprTam = -1;
+
                  } 
             | 
               NUMBER
               {
               	_exprContent += _input.LT(-1).getText();
-              } 
+                _exprTam = -1;
+              }
             | 
               TEXT
               {
               	_exprContent += _input.LT(-1).getText();
+                _exprTam = -1;
               }
-			;
+            |VECTOR {
+                _exprContent += _input.LT(-1).getText();
+                _exprTam = 1;
+            }
+            ;
 			
 	
 AP	: '('
@@ -282,5 +326,8 @@ NUMBER	: [0-9]+ ('.' [0-9]+)?
 
 TEXT	: ('"')('a'..'z' | 'A'..'Z' | '0'..'9' | ' ' | ',' | ':' | '?' | '!')* ('"')
 		;
+
+VECTOR :'{'[0-9]+ (',' [0-9]+)*'}';
+
 		
 WS	: (' ' | '\t' | '\n' | '\r') -> skip;

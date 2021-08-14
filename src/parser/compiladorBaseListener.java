@@ -11,6 +11,7 @@ package src.parser;
 	import src.ast.CommandEscrita;
 	import src.ast.CommandAtribuicao;
 	import src.ast.CommandDecisao;
+	import src.ast.CommandTamanho;
 	import src.ast.CommandEnquanto;
 	import src.ast.CommandFaca;
 	import java.util.ArrayList;
@@ -99,6 +100,18 @@ public class compiladorBaseListener implements compiladorListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCmd(compiladorParser.CmdContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCmdtamanho(compiladorParser.CmdtamanhoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCmdtamanho(compiladorParser.CmdtamanhoContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

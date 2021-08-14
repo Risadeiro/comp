@@ -5,15 +5,20 @@ inicio
   booleano c;
   caracter d;
   inteiro e;
-  
+  numero[] vec;
+
   leia(a);
   leia(b);
   leia(c);
   leia(d);
   leia(e);
+  vec = {1,2,3};
 
   t = "teste"; 
-
+  escreva(t);
+  escreva(tamanho(t));
+  escreva(t);
+  escreva(tamanho(vec));
   faca {
       b = b + 1;
       escreva(b);

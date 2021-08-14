@@ -7,7 +7,8 @@ public class compiladorVariable extends compiladorSymbol {
 	public static final int BOOLEAN =2;
 	public static final int CHAR =3;
 	public static final int INT =4;
-	
+	public static final int VECTOR =5;
+
 	private int type;
 	private String value;
 	
@@ -48,7 +49,9 @@ public class compiladorVariable extends compiladorSymbol {
     	   str = "boolean ";
        } else if (type == CHAR) {
     	   str = "char ";
-       } else {
+       } else if (type == VECTOR){
+			str = "int[]";
+		}else{
     	   str = "int ";
        }
        return str + " "+super.name+";";
