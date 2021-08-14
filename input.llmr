@@ -12,7 +12,7 @@ inicio
   leia(c);
   leia(d);
   leia(e);
-  vec = {1,2,3};
+  vec = {1,2,3,4};
 
   t = "teste"; 
   escreva(t);

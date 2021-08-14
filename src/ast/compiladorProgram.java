@@ -12,6 +12,8 @@ import src.exceptions.compiladorSemanticException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.lang.model.util.ElementScanner14;
+
 public class compiladorProgram {
 	private compiladorSymbolTable varTable;
 	private ArrayList<AbstractCommand> comandos;
@@ -54,26 +56,23 @@ public class compiladorProgram {
 				String expr = cmdatr.GetExpr();
 				Pattern patternTexto = Pattern.compile("\".*\"", Pattern.CASE_INSENSITIVE);
 				Pattern patternNumero = Pattern.compile("^[0-9]*.?[0-9]*$", Pattern.CASE_INSENSITIVE);
-				Pattern patternVetor = Pattern.compile("\\{"+"^[0-9]+(',' [0-9]+)*"+"\\}", Pattern.CASE_INSENSITIVE);
     			Matcher matcherTexto = patternTexto.matcher(expr);
 				Matcher matcherNumero = patternNumero.matcher(expr);
-				Matcher matcherVetor = patternVetor.matcher(expr);
     			boolean matchFoundTexto = matcherTexto.find();
 				boolean matchFoundNumero = matcherNumero.find();
-				boolean matchFoundVetor = matcherVetor.find();
 				int tipo = 100;
     			if(matchFoundTexto)
 					tipo = 1;
-				else if(matchFoundNumero||matchFoundVetor)
+				else if(matchFoundNumero)
 					tipo = 0;
-//				else
-//					throw new compiladorSemanticException("Symbol "+ id +" does not support "+ expr);
-//				for (compiladorSymbol auxVar : varTable.getAll()) {
-//					compiladorVariable compVar = (compiladorVariable) auxVar;
-//					if(id.equals(compVar.getName()) && tipo != compVar.getType()){
-//						throw new compiladorSemanticException("Symbol "+ id +" does not support "+ expr);
-//					}
-//				}
+				for (compiladorSymbol auxVar : varTable.getAll()) {
+					compiladorVariable compVar = (compiladorVariable) auxVar;
+					if(id.equals(compVar.getName()) && tipo != compVar.getType()){
+						if(tipo == 100 && 2 != compVar.getType() && 1 != compVar.getType())
+							continue;
+						throw new compiladorSemanticException("Symbol "+ id +" does not support "+ expr);
+					}
+				}
 			}
 		}
 		
